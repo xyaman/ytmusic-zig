@@ -49,6 +49,13 @@ pub const Track = struct {
     id: []u8,
 };
 
+pub const Artist = struct {
+    name: []u8,
+    id: []u8,
+};
+
+// I havent fully know the differences between Song and Video
+// so for now both are the same
 pub const Song = Track;
 pub const Video = Track;
 
@@ -61,7 +68,7 @@ pub const SearchResult = struct {
     featured_playlists: u16 = 1,
     community_playlists: u16 = 1,
     albums: u16 = 1,
-    artists: u16 = 1,
+    artists: ArrayList(Artist),
 
     allocator: std.mem.Allocator,
 
@@ -71,6 +78,7 @@ pub const SearchResult = struct {
         return Self{
             .songs = ArrayList(Song).init(allocator),
             .videos = ArrayList(Video).init(allocator),
+            .artists = ArrayList(Artist).init(allocator),
             .allocator = allocator,
         };
     }
@@ -90,7 +98,13 @@ pub const SearchResult = struct {
             self.allocator.free(video.artist_id);
         }
 
+        for (self.artists.items) |artist| {
+            self.allocator.free(artist.name);
+            self.allocator.free(artist.id);
+        }
+
         self.songs.deinit();
         self.videos.deinit();
+        self.artists.deinit();
     }
 };

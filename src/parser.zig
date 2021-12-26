@@ -31,6 +31,10 @@ pub fn parseSearch(input: []const u8, allocator: std.mem.Allocator) !model.Searc
                     const video = try parseVideo(allocator, item.bytes);
                     try search_result.videos.append(video);
                 },
+                .artist => {
+                    const artist = try parseArtist(allocator, item.bytes);
+                    try search_result.artists.append(artist);
+                },
                 else => {},
             }
         }
@@ -88,5 +92,27 @@ pub fn parseVideo(allocator: std.mem.Allocator, input: []const u8) !model.Video 
         .id = try std.fmt.allocPrint(allocator, "{s}", .{runs0_endpoint.bytes}),
         .artist_name = try std.fmt.allocPrint(allocator, "{s}", .{runs1_text.bytes}),
         .artist_id = try std.fmt.allocPrint(allocator, "{s}", .{runs1_endpoint.bytes}),
+    };
+}
+
+pub fn parseArtist(allocator: std.mem.Allocator, input: []const u8) !model.Artist {
+
+    // Artist
+    // text: Artist name
+    // endpoint: null
+    const item_flex0 = try zjson.get(input, .{ "musicResponsiveListItemRenderer", "flexColumns", 0, "musicResponsiveListItemFlexColumnRenderer" });
+    const runs0 = try zjson.get(item_flex0.bytes, .{ "text", "runs", 0 });
+    const runs0_text = try zjson.get(runs0.bytes, .{"text"});
+
+    const endpoint = try zjson.get(input, .{ "musicResponsiveListItemRenderer", "navigationEndpoint", "browseEndpoint", "browseId" });
+
+    // Subscribers
+    //const item_flex1 = try zjson.get(input, .{ "musicResponsiveListItemRenderer", "flexColumns", 1, "musicResponsiveListItemFlexColumnRenderer" });
+    //const runs1 = try zjson.get(item_flex1.bytes, .{ "text", "runs", 2 });
+    //const runs1_text = try zjson.get(runs1.bytes, .{"text"});
+
+    return model.Artist{
+        .name = try std.fmt.allocPrint(allocator, "{s}", .{runs0_text.bytes}),
+        .id = try std.fmt.allocPrint(allocator, "{s}", .{endpoint.bytes}),
     };
 }
