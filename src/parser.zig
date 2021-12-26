@@ -61,11 +61,20 @@ pub fn parseSong(allocator: std.mem.Allocator, input: []const u8) !model.Song {
     const runs1_text = try zjson.get(runs1.bytes, .{"text"});
     const runs1_endpoint = try zjson.get(runs1.bytes, .{ "navigationEndpoint", "browseEndpoint", "browseId" });
 
+    // Runs 4 contains album related info
+    // text: album name
+    // endpoint: album ID
+    const runs4 = try zjson.get(item_flex1.bytes, .{ "text", "runs", 4 });
+    const runs4_text = try zjson.get(runs4.bytes, .{"text"});
+    const runs4_endpoint = try zjson.get(runs4.bytes, .{ "navigationEndpoint", "browseEndpoint", "browseId" });
+
     return model.Song{
         .title = try std.fmt.allocPrint(allocator, "{s}", .{runs0_text.bytes}),
         .id = try std.fmt.allocPrint(allocator, "{s}", .{runs0_endpoint.bytes}),
         .artist_name = try std.fmt.allocPrint(allocator, "{s}", .{runs1_text.bytes}),
         .artist_id = try std.fmt.allocPrint(allocator, "{s}", .{runs1_endpoint.bytes}),
+        .album_name = try std.fmt.allocPrint(allocator, "{s}", .{runs4_text.bytes}),
+        .album_id = try std.fmt.allocPrint(allocator, "{s}", .{runs4_endpoint.bytes}),
     };
 }
 

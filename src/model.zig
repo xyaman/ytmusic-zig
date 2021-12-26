@@ -42,7 +42,16 @@ pub const TopResult = union(enum) {
     featured_playlists,
 };
 
-pub const Track = struct {
+pub const Song = struct {
+    title: []u8,
+    artist_name: []u8,
+    artist_id: []u8,
+    id: []u8,
+    album_name: []u8,
+    album_id: []u8,
+};
+
+pub const Video = struct {
     title: []u8,
     artist_name: []u8,
     artist_id: []u8,
@@ -53,11 +62,6 @@ pub const Artist = struct {
     name: []u8,
     id: []u8,
 };
-
-// I havent fully know the differences between Song and Video
-// so for now both are the same
-pub const Song = Track;
-pub const Video = Track;
 
 // Responses
 
@@ -89,6 +93,8 @@ pub const SearchResult = struct {
             self.allocator.free(song.id);
             self.allocator.free(song.artist_name);
             self.allocator.free(song.artist_id);
+            self.allocator.free(song.album_name);
+            self.allocator.free(song.album_id);
         }
 
         for (self.videos.items) |video| {
