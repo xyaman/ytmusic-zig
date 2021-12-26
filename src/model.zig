@@ -43,18 +43,10 @@ pub const TopResult = union(enum) {
 };
 
 pub const Track = struct {
-    title: []const u8,
-    artist_name: []const u8,
-    artist_id: []const u8,
-    id: []const u8,
-
-    allocator: std.mem.Allocator = undefined,
-
-    const Self = @This();
-
-    pub fn deinit(self: Self) void {
-        self.allocator.free(self.title);
-    }
+    title: []u8,
+    artist_name: []u8,
+    artist_id: []u8,
+    id: []u8,
 };
 
 pub const Song = Track;
@@ -85,11 +77,17 @@ pub const SearchResult = struct {
 
     pub fn deinit(self: Self) void {
         for (self.songs.items) |song| {
-            song.deinit();
+            self.allocator.free(song.title);
+            self.allocator.free(song.id);
+            self.allocator.free(song.artist_name);
+            self.allocator.free(song.artist_id);
         }
 
         for (self.videos.items) |video| {
-            video.deinit();
+            self.allocator.free(video.title);
+            self.allocator.free(video.id);
+            self.allocator.free(video.artist_name);
+            self.allocator.free(video.artist_id);
         }
 
         self.songs.deinit();

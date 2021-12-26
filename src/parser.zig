@@ -59,10 +59,9 @@ pub fn parseSong(allocator: std.mem.Allocator, input: []const u8) !model.Song {
 
     return model.Song{
         .title = try std.fmt.allocPrint(allocator, "{s}", .{runs0_text.bytes}),
-        .id = runs0_endpoint.bytes,
-        .artist_name = runs1_text.bytes,
-        .artist_id = runs1_endpoint.bytes,
-        .allocator = allocator,
+        .id = try std.fmt.allocPrint(allocator, "{s}", .{runs0_endpoint.bytes}),
+        .artist_name = try std.fmt.allocPrint(allocator, "{s}", .{runs1_text.bytes}),
+        .artist_id = try std.fmt.allocPrint(allocator, "{s}", .{runs1_endpoint.bytes}),
     };
 }
 
@@ -86,9 +85,8 @@ pub fn parseVideo(allocator: std.mem.Allocator, input: []const u8) !model.Video 
 
     return model.Video{
         .title = try std.fmt.allocPrint(allocator, "{s}", .{runs0_text.bytes}),
-        .id = runs0_endpoint.bytes,
-        .artist_name = runs1_text.bytes,
-        .artist_id = runs1_endpoint.bytes,
-        .allocator = allocator,
+        .id = try std.fmt.allocPrint(allocator, "{s}", .{runs0_endpoint.bytes}),
+        .artist_name = try std.fmt.allocPrint(allocator, "{s}", .{runs1_text.bytes}),
+        .artist_id = try std.fmt.allocPrint(allocator, "{s}", .{runs1_endpoint.bytes}),
     };
 }
