@@ -28,8 +28,11 @@ pub const Client = struct {
         self.headers.deinit();
     }
 
-    fn makeRequest(self: *Self, key: []const u8, value: []const u8) ![]u8 {
-        var req = try zfetch.Request.init(self.allocator, "https://music.youtube.com/youtubei/v1/search?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30", null);
+    fn makeRequest(self: *Self, endpoint: []const u8, key: []const u8, value: []const u8) ![]u8 {
+        const uri = try std.fmt.allocPrint(self.allocator, "https://music.youtube.com/youtubei/v1/{s}?key=AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30", .{endpoint});
+        defer self.allocator.free(uri);
+
+        var req = try zfetch.Request.init(self.allocator, uri, null);
         defer req.deinit();
 
         const body_fmt =
@@ -59,7 +62,7 @@ pub const Client = struct {
     }
 
     pub fn search(self: *Self, query: []const u8) !model.SearchResult {
-        var res_body = try self.makeRequest("query", query);
+        var res_body = try self.makeRequest("search", "query", query);
         defer self.allocator.free(res_body);
 
         const result = try parser.parseSearch(res_body, self.allocator);
